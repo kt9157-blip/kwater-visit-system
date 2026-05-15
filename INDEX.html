@@ -1,0 +1,1358 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>K-water 스마트 방문관리 시스템</title>
+  <style>
+    :root {
+      --brand-1: #0a5fa8;
+      --brand-2: #0f7fc9;
+      --brand-3: #2ba6df;
+      --brand-4: #eaf5fc;
+      --ink-1: #1b2d3d;
+      --ink-2: #536b7d;
+      --line: #d8e6f0;
+      --line-2: #c8d9e6;
+      --bg-1: #edf4f9;
+      --bg-2: #f7fbfe;
+      --card: rgba(255,255,255,0.82);
+      --card-solid: #ffffff;
+      --success: #0e8a60;
+      --success-bg: #def8ed;
+      --warning: #c98508;
+      --warning-bg: #fff3dc;
+      --danger: #c44f25;
+      --danger-bg: #fde8e1;
+      --shadow-1: 0 24px 56px rgba(11, 45, 77, 0.14);
+      --shadow-2: 0 14px 28px rgba(11, 45, 77, 0.08);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --radius-sm: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color: var(--ink-1);
+      background:
+        radial-gradient(circle at 10% 15%, rgba(43,166,223,0.14), transparent 22%),
+        radial-gradient(circle at 88% 8%, rgba(10,95,168,0.12), transparent 22%),
+        linear-gradient(180deg, #edf4f9 0%, #f7fbfe 36%, #eef5fa 100%);
+      min-height: 100vh;
+      padding: 22px;
+    }
+
+    .wrap {
+      max-width: 1520px;
+      margin: 0 auto;
+    }
+
+    .top-shell {
+      background: rgba(255,255,255,0.58);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: 34px;
+      box-shadow: var(--shadow-1);
+      overflow: hidden;
+    }
+
+    .global-head {
+      background: linear-gradient(135deg, #095899 0%, #0d78be 52%, #25a3dd 100%);
+      color: white;
+      padding: 22px 26px 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .global-head::before,
+    .global-head::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.10);
+    }
+
+    .global-head::before {
+      width: 260px;
+      height: 260px;
+      right: -50px;
+      top: -90px;
+    }
+
+    .global-head::after {
+      width: 180px;
+      height: 180px;
+      left: -50px;
+      bottom: -70px;
+    }
+
+    .status-line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      opacity: .95;
+      margin-bottom: 18px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .brand-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 18px;
+      position: relative;
+      z-index: 1;
+      flex-wrap: wrap;
+    }
+
+    .brand-left {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .brand-mark {
+      width: 56px;
+      height: 56px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.22);
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: .6px;
+      flex: 0 0 auto;
+    }
+
+    .brand-copy h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.18;
+      font-weight: 900;
+    }
+
+    .brand-copy p {
+      margin: 8px 0 0;
+      font-size: 14px;
+      line-height: 1.7;
+      max-width: 760px;
+      opacity: .95;
+    }
+
+    .hero-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .hero-tag {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.18);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .mode-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      padding: 18px 22px;
+      background: linear-gradient(180deg, rgba(255,255,255,.76), rgba(255,255,255,.64));
+      border-bottom: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    .mode-title {
+      font-size: 14px;
+      color: var(--ink-2);
+      font-weight: 700;
+    }
+
+    .mode-switch {
+      display: inline-flex;
+      padding: 6px;
+      background: #edf4f9;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      gap: 6px;
+    }
+
+    .mode-switch button {
+      border: 0;
+      background: transparent;
+      padding: 12px 18px;
+      border-radius: 14px;
+      font-weight: 900;
+      color: #5a7386;
+      cursor: pointer;
+      transition: .2s ease;
+      min-width: 156px;
+    }
+
+    .mode-switch button.active {
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      color: white;
+      box-shadow: 0 12px 24px rgba(10,95,168,0.22);
+    }
+
+    .surface {
+      padding: 22px;
+      background: linear-gradient(180deg, rgba(247,251,254,.92), rgba(240,246,251,.94));
+    }
+
+    .page {
+      display: none;
+      animation: fade .24s ease;
+    }
+
+    .page.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: 0; transform: translateY(5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 390px 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--card);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,255,255,0.72);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-1);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 20px 22px 14px;
+      border-bottom: 1px solid rgba(216,230,240,.8);
+      background: linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.66));
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 900;
+      color: var(--brand-1);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: var(--brand-4);
+      margin-bottom: 10px;
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin: 0;
+      line-height: 1.25;
+      font-weight: 900;
+    }
+
+    .panel-head h2 { font-size: 24px; }
+    .panel-head h3 { font-size: 18px; }
+
+    .panel-head p {
+      margin: 8px 0 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--ink-2);
+    }
+
+    .panel-body {
+      padding: 18px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .metric {
+      background: rgba(255,255,255,.92);
+      border: 1px solid #dfebf3;
+      border-radius: 18px;
+      padding: 14px;
+      box-shadow: var(--shadow-2);
+    }
+
+    .metric span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 24px;
+      margin-top: 8px;
+      line-height: 1;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .card {
+      background: rgba(255,255,255,.92);
+      border: 1px solid #dce9f2;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      box-shadow: var(--shadow-2);
+    }
+
+    .card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card h4 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .sub {
+      color: var(--ink-2);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .approved { color: var(--success); background: var(--success-bg); }
+    .pending { color: var(--warning); background: var(--warning-bg); }
+    .rejected { color: var(--danger); background: var(--danger-bg); }
+    .brand-pill { color: var(--brand-1); background: var(--brand-4); }
+
+    .chip-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      padding: 10px 12px;
+      border-radius: 999px;
+      background: #f8fbfe;
+      border: 1px solid #d6e4ef;
+      color: #3d5b72;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .field { margin-bottom: 12px; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 900;
+      color: #2c4559;
+      margin-bottom: 7px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid #d2e1eb;
+      border-radius: 16px;
+      padding: 14px 14px;
+      background: #fcfeff;
+      color: var(--ink-1);
+      font-size: 14px;
+      outline: none;
+      transition: border-color .2s, box-shadow .2s, transform .12s;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      border-color: #74bce8;
+      box-shadow: 0 0 0 4px rgba(15,127,201,.12);
+    }
+
+    textarea {
+      min-height: 104px;
+      resize: vertical;
+    }
+
+    .agree {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px;
+      border-radius: 18px;
+      background: #f5f9fc;
+      border: 1px solid #e2edf5;
+      margin-bottom: 14px;
+    }
+
+    .agree input {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+    }
+
+    .agree p {
+      margin: 0;
+      font-size: 12px;
+      line-height: 1.65;
+      color: var(--ink-2);
+    }
+
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 10px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 16px;
+      padding: 15px 16px;
+      font-size: 14px;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform .12s ease, box-shadow .2s ease, opacity .2s ease;
+    }
+
+    .btn:active { transform: translateY(1px); }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-1), var(--brand-2));
+      color: white;
+      box-shadow: 0 16px 28px rgba(10,95,168,.24);
+    }
+
+    .btn-soft {
+      background: #ebf5fc;
+      color: var(--brand-1);
+    }
+
+    .btn-ghost {
+      background: #f7fbfe;
+      color: #4f697d;
+      border: 1px solid #dbe8f1;
+    }
+
+    .btn-approve {
+      background: linear-gradient(135deg, #0b8a60, #18b07b);
+      color: white;
+      box-shadow: 0 14px 24px rgba(14,138,96,.22);
+    }
+
+    .btn-reject {
+      background: linear-gradient(135deg, #c14c23, #e07543);
+      color: white;
+      box-shadow: 0 14px 24px rgba(196,79,37,.22);
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .timeline-item {
+      padding: 14px;
+      border-radius: 18px;
+      border: 1px solid #dce9f2;
+      background: linear-gradient(180deg, #fff 0%, #f9fcfe 100%);
+    }
+
+    .timeline-item h5 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .list-col {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-height: 760px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .request-item {
+      border: 1px solid #d9e7f0;
+      border-radius: 20px;
+      background: linear-gradient(180deg, rgba(255,255,255,1), rgba(248,252,254,1));
+      padding: 14px;
+      cursor: pointer;
+      transition: .18s ease;
+      box-shadow: var(--shadow-2);
+    }
+
+    .request-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .request-item.active {
+      border-color: #7ebfe5;
+      box-shadow: 0 0 0 4px rgba(15,127,201,.10);
+    }
+
+    .request-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .request-item h5 {
+      margin: 0 0 6px;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .meta {
+      font-size: 12px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-tabs {
+      display: inline-flex;
+      padding: 6px;
+      border-radius: 16px;
+      background: #eef4f9;
+      border: 1px solid var(--line);
+      gap: 6px;
+    }
+
+    .filter-tabs button {
+      border: 0;
+      background: transparent;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-weight: 900;
+      color: #577084;
+      cursor: pointer;
+    }
+
+    .filter-tabs button.active {
+      background: white;
+      color: var(--brand-1);
+      box-shadow: 0 8px 18px rgba(11,45,77,.08);
+    }
+
+    .search {
+      min-width: 260px;
+      flex: 1;
+    }
+
+    .detail-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .detail {
+      background: #f7fbfe;
+      border: 1px solid #e2edf5;
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .detail span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .detail strong {
+      display: block;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .detail-full {
+      background: #f7fbfe;
+      border: 1px solid #e2edf5;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 14px;
+    }
+
+    .detail-full span {
+      display: block;
+      font-size: 12px;
+      color: var(--ink-2);
+      margin-bottom: 6px;
+    }
+
+    .detail-full p {
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .history-item {
+      border-radius: 18px;
+      border: 1px solid #dce9f2;
+      background: linear-gradient(180deg, #fff 0%, #f9fcfe 100%);
+      padding: 14px;
+    }
+
+    .history-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+
+    .history-item h5 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .qr-row {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .qr {
+      width: 78px;
+      height: 78px;
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, #0d1d2f 10%, transparent 10%, transparent 20%, #0d1d2f 20%, #0d1d2f 30%, transparent 30%, transparent 40%, #0d1d2f 40%, #0d1d2f 50%, transparent 50%, transparent 60%, #0d1d2f 60%, #0d1d2f 70%, transparent 70%, transparent 80%, #0d1d2f 80%, #0d1d2f 90%, transparent 90%),
+        linear-gradient(#0d1d2f 10%, transparent 10%, transparent 20%, #0d1d2f 20%, #0d1d2f 30%, transparent 30%, transparent 40%, #0d1d2f 40%, #0d1d2f 50%, transparent 50%, transparent 60%, #0d1d2f 60%, #0d1d2f 70%, transparent 70%, transparent 80%, #0d1d2f 80%, #0d1d2f 90%, transparent 90%),
+        #fff;
+      border: 1px solid #dbe8f1;
+      flex: 0 0 auto;
+    }
+
+    .empty {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--ink-2);
+      line-height: 1.7;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(16px);
+      background: #0f2d43;
+      color: white;
+      padding: 14px 18px;
+      border-radius: 16px;
+      box-shadow: 0 14px 28px rgba(15,45,67,.24);
+      font-size: 13px;
+      opacity: 0;
+      pointer-events: none;
+      transition: .25s ease;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 1200px) {
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 12px; }
+      .surface { padding: 14px; }
+      .metric-grid, .form-grid, .detail-grid, .action-grid, .btn-row { grid-template-columns: 1fr; }
+      .mode-switch { width: 100%; }
+      .mode-switch button { flex: 1; min-width: 0; }
+      .search { min-width: 100%; }
+      .brand-copy h1 { font-size: 24px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-shell">
+      <header class="global-head">
+        <div class="status-line">
+          <span>09:00</span>
+          <span>K-water Smart Visitor Flow</span>
+        </div>
+
+        <div class="brand-row">
+          <div class="brand-left">
+            <div class="brand-mark">KW</div>
+            <div class="brand-copy">
+              <h1>K-water 스마트 방문관리 시스템</h1>
+              <p>외부기관 방문, 민원 응대, 협력업체 업무 방문을 보다 안전하고 정돈된 흐름으로 운영하기 위한 HTML 시제품입니다. 신청 부서용 화면과 관리자 승인용 화면을 역할별로 분리하여 구성했습니다.</p>
+              <div class="hero-tags">
+                <span class="hero-tag">사전 신청 기반</span>
+                <span class="hero-tag">승인형 출입 프로세스</span>
+                <span class="hero-tag">부서 신청용 / 관리자용 분리</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="mode-bar">
+        <div class="mode-title">운영 화면 선택</div>
+        <div class="mode-switch" id="modeSwitch">
+          <button class="active" data-mode="department">부서 신청용 화면</button>
+          <button data-mode="admin">관리자 승인용 화면</button>
+        </div>
+      </div>
+
+      <main class="surface">
+        <section class="page active" id="departmentPage">
+          <div class="grid-2">
+            <div class="stack">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="eyebrow">부서 신청용 화면</div>
+                  <h2>방문 신청 및 접수 안내</h2>
+                  <p>부서 담당자가 외부 방문자의 일정을 사전에 등록하고 현재 승인 상태를 확인할 수 있도록 정리한 화면입니다.</p>
+                </div>
+                <div class="panel-body">
+                  <div class="metric-grid" id="deptMetrics">
+                    <div class="metric"><span>총 신청</span><strong>0</strong></div>
+                    <div class="metric"><span>승인 완료</span><strong>0</strong></div>
+                    <div class="metric"><span>승인 대기</span><strong>0</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="eyebrow">신청 가이드</div>
+                  <h3>사전 확인사항</h3>
+                  <p>현장 혼선을 줄이고 승인 속도를 높이기 위해 아래 정보를 정확히 입력해 주세요.</p>
+                </div>
+                <div class="panel-body stack">
+                  <div class="card">
+                    <div class="card-head">
+                      <h4>등록 시 포함 권장 항목</h4>
+                      <span class="pill brand-pill">정확 입력</span>
+                    </div>
+                    <div class="chip-wrap">
+                      <span class="chip">방문 목적</span>
+                      <span class="chip">방문 일시</span>
+                      <span class="chip">방문 부서</span>
+                      <span class="chip">방문 대상자</span>
+                      <span class="chip">차량번호</span>
+                      <span class="chip">동반자 정보</span>
+                    </div>
+                  </div>
+
+                  <div class="card">
+                    <div class="card-head">
+                      <h4>운영 흐름</h4>
+                      <span class="pill brand-pill">신청 → 승인</span>
+                    </div>
+                    <div class="timeline">
+                      <div class="timeline-item">
+                        <h5>1. 부서 담당 등록</h5>
+                        <div class="sub">부서에서 외부기관 또는 민원인 방문 정보를 사전에 입력합니다.</div>
+                      </div>
+                      <div class="timeline-item">
+                        <h5>2. 관리자 검토</h5>
+                        <div class="sub">관리자는 방문 목적과 일정, 보안 요소를 확인한 뒤 승인 또는 반려합니다.</div>
+                      </div>
+                      <div class="timeline-item">
+                        <h5>3. 승인 상태 반영</h5>
+                        <div class="sub">부서 신청 내역 화면에서 승인 결과와 관리자 메모를 즉시 확인할 수 있습니다.</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="stack">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="eyebrow">방문 등록</div>
+                  <h3>방문 신청서 작성</h3>
+                  <p>실제 운영을 고려해 입력 항목과 문구를 보다 정돈된 업무형 표현으로 다듬었습니다.</p>
+                </div>
+                <div class="panel-body">
+                  <form id="visitForm">
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="visitType">방문 구분</label>
+                        <select id="visitType" required>
+                          <option value="">선택하세요</option>
+                          <option>외부기관 업무협의</option>
+                          <option>민원 상담 방문</option>
+                          <option>협력업체 업무수행</option>
+                          <option>시설 점검 및 유지보수</option>
+                          <option>납품 및 장비 반입</option>
+                        </select>
+                      </div>
+                      <div class="field">
+                        <label for="department">방문 요청 부서</label>
+                        <select id="department" required>
+                          <option value="">선택하세요</option>
+                          <option>디지털관리처</option>
+                          <option>총무관리처</option>
+                          <option>안전관리부서</option>
+                          <option>고객지원부서</option>
+                          <option>시설관리부서</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="name">방문자 성명</label>
+                        <input id="name" type="text" placeholder="예: 홍길동" required />
+                      </div>
+                      <div class="field">
+                        <label for="org">소속 기관 또는 업체명</label>
+                        <input id="org" type="text" placeholder="예: OO기관 또는 OO업체" required />
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="phone">연락처</label>
+                        <input id="phone" type="tel" placeholder="010-0000-0000" required />
+                      </div>
+                      <div class="field">
+                        <label for="host">방문 대상자</label>
+                        <input id="host" type="text" placeholder="예: 김담당" required />
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="date">방문 예정일</label>
+                        <input id="date" type="date" required />
+                      </div>
+                      <div class="field">
+                        <label for="time">방문 예정시간</label>
+                        <input id="time" type="time" required />
+                      </div>
+                    </div>
+
+                    <div class="form-grid">
+                      <div class="field">
+                        <label for="car">차량번호</label>
+                        <input id="car" type="text" placeholder="예: 12가3456" />
+                      </div>
+                      <div class="field">
+                        <label for="companions">동반자 정보</label>
+                        <input id="companions" type="text" placeholder="예: 2명 / 김OO, 이OO" />
+                      </div>
+                    </div>
+
+                    <div class="field">
+                      <label for="purpose">방문 목적</label>
+                      <textarea id="purpose" placeholder="업무 협의, 민원 상담, 시설 점검 등 방문 목적과 주요 내용을 구체적으로 작성해 주세요." required></textarea>
+                    </div>
+
+                    <div class="agree">
+                      <input id="agree" type="checkbox" required />
+                      <p>방문 등록 정보는 승인 심사와 출입 확인 및 이력 관리를 위해 활용됩니다. 작성 내용이 정확함을 확인하며 개인정보 및 보안 유의사항에 동의합니다.</p>
+                    </div>
+
+                    <div class="btn-row">
+                      <button class="btn btn-primary" type="submit">방문 신청 등록</button>
+                      <button class="btn btn-soft" type="button" id="sampleFill">예시 입력</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="eyebrow">접수 이력</div>
+                  <h3>신청 내역 및 승인 상태</h3>
+                  <p>부서 담당자는 등록한 신청 건의 처리 상태를 이 화면에서 확인할 수 있습니다.</p>
+                </div>
+                <div class="panel-body">
+                  <div class="history-list" id="historyList"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" id="adminPage">
+          <div class="stack">
+            <div class="panel">
+              <div class="panel-head">
+                <div class="eyebrow">관리자 승인용 화면</div>
+                <h2>방문 신청 심사 및 승인 대시보드</h2>
+                <p>관리자는 방문 요청 건을 목록에서 확인하고, 세부 내용을 검토한 뒤 승인 또는 반려할 수 있습니다. 검색과 상태 필터를 통해 필요한 건을 빠르게 선별할 수 있습니다.</p>
+              </div>
+              <div class="panel-body">
+                <div class="metric-grid" id="adminMetrics">
+                  <div class="metric"><span>총 신청</span><strong>0</strong></div>
+                  <div class="metric"><span>승인 완료</span><strong>0</strong></div>
+                  <div class="metric"><span>승인 대기</span><strong>0</strong></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2" style="grid-template-columns: 1.05fr .95fr;">
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="card-head" style="margin:0;">
+                    <div>
+                      <div class="eyebrow" style="margin-bottom:8px;">신청 목록</div>
+                      <h3>승인 대상 방문 요청</h3>
+                    </div>
+                    <span class="pill pending" id="listCountPill">0건 표시</span>
+                  </div>
+                  <p>신청자의 이름, 기관, 방문 부서, 방문 대상자를 기준으로 검색할 수 있습니다.</p>
+                </div>
+                <div class="panel-body">
+                  <div class="toolbar" style="margin-bottom:14px;">
+                    <div class="filter-tabs" id="filterGroup">
+                      <button class="active" data-filter="all">전체</button>
+                      <button data-filter="pending">대기</button>
+                      <button data-filter="approved">승인</button>
+                      <button data-filter="rejected">반려</button>
+                    </div>
+                    <input class="search" id="searchInput" type="text" placeholder="이름, 기관, 부서, 대상자 검색" />
+                    <button class="btn btn-ghost" id="seedDataBtn" type="button">시연 데이터 생성</button>
+                    <button class="btn btn-ghost" id="resetDataBtn" type="button">전체 초기화</button>
+                  </div>
+                  <div class="list-col" id="requestList"></div>
+                </div>
+              </div>
+
+              <div class="panel">
+                <div class="panel-head">
+                  <div class="eyebrow">상세 검토</div>
+                  <h3>신청 상세 및 승인 처리</h3>
+                  <p>선택한 신청 건의 내용을 바탕으로 승인 또는 반려를 처리하고, 필요한 경우 메모를 남길 수 있습니다.</p>
+                </div>
+                <div class="panel-body" id="detailPanel">
+                  <div class="empty">왼쪽 목록에서 신청 건을 선택하면 상세 검토 화면이 표시됩니다.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = 'kwater_visit_requests_v3';
+    let requests = [];
+    let selectedId = null;
+    let currentFilter = 'all';
+
+    const modeButtons = document.querySelectorAll('#modeSwitch button');
+    const pages = document.querySelectorAll('.page');
+    const toast = document.getElementById('toast');
+    const requestList = document.getElementById('requestList');
+    const detailPanel = document.getElementById('detailPanel');
+    const historyList = document.getElementById('historyList');
+    const listCountPill = document.getElementById('listCountPill');
+    const searchInput = document.getElementById('searchInput');
+    const deptMetrics = document.getElementById('deptMetrics');
+    const adminMetrics = document.getElementById('adminMetrics');
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function setMode(mode) {
+      pages.forEach(page => page.classList.toggle('active', page.id === `${mode}Page`));
+      modeButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+    }
+
+    modeButtons.forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+
+    function loadRequests() {
+      try {
+        requests = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+      } catch (e) {
+        requests = [];
+      }
+      if (!Array.isArray(requests)) requests = [];
+    }
+
+    function saveRequests() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(requests));
+    }
+
+    function generateId() {
+      const now = new Date();
+      const yy = String(now.getFullYear()).slice(2);
+      const mm = String(now.getMonth() + 1).padStart(2, '0');
+      const dd = String(now.getDate()).padStart(2, '0');
+      const seq = Math.floor(Math.random() * 9000) + 1000;
+      return `KW-${yy}${mm}${dd}-${seq}`;
+    }
+
+    function statusClass(status) {
+      if (status === 'approved') return 'approved';
+      if (status === 'rejected') return 'rejected';
+      return 'pending';
+    }
+
+    function statusLabel(status) {
+      if (status === 'approved') return '승인 완료';
+      if (status === 'rejected') return '반려';
+      return '승인 대기';
+    }
+
+    function escapeHtml(text) {
+      return String(text || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function updateMetrics() {
+      const total = requests.length;
+      const approved = requests.filter(i => i.status === 'approved').length;
+      const pending = requests.filter(i => i.status === 'pending').length;
+
+      const html = `
+        <div class="metric"><span>총 신청</span><strong>${total}</strong></div>
+        <div class="metric"><span>승인 완료</span><strong>${approved}</strong></div>
+        <div class="metric"><span>승인 대기</span><strong>${pending}</strong></div>
+      `;
+      deptMetrics.innerHTML = html;
+      adminMetrics.innerHTML = html;
+    }
+
+    function getFilteredRequests() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      return requests.filter(item => {
+        const matchesFilter = currentFilter === 'all' ? true : item.status === currentFilter;
+        const haystack = [item.name, item.org, item.department, item.host, item.visitType, item.purpose, item.requestId].join(' ').toLowerCase();
+        const matchesSearch = keyword ? haystack.includes(keyword) : true;
+        return matchesFilter && matchesSearch;
+      }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+
+    function renderHistory() {
+      const sorted = [...requests].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      if (!sorted.length) {
+        historyList.innerHTML = `<div class="empty">아직 등록된 신청 건이 없습니다.<br>방문 신청서를 작성해 첫 번째 요청을 등록해 주세요.</div>`;
+        return;
+      }
+
+      historyList.innerHTML = sorted.map(item => `
+        <div class="history-item">
+          <div class="history-top">
+            <div>
+              <h5>${escapeHtml(item.visitType)}</h5>
+              <div class="meta">${item.date} ${item.time} · ${escapeHtml(item.department)} · ${escapeHtml(item.host)}</div>
+            </div>
+            <span class="pill ${statusClass(item.status)}">${statusLabel(item.status)}</span>
+          </div>
+          <div class="meta">${escapeHtml(item.name)} / ${escapeHtml(item.org)}<br>신청번호: ${item.requestId}</div>
+          ${item.status === 'approved' ? `
+            <div class="qr-row">
+              <div class="qr"></div>
+              <div class="meta">관리자 승인 완료 상태입니다.<br>방문 당일 신청번호 또는 QR 화면을 제시해 주세요.</div>
+            </div>
+          ` : ''}
+          ${item.adminMemo ? `<div class="detail-full" style="margin-top:12px; margin-bottom:0;"><span>관리자 메모</span><p>${escapeHtml(item.adminMemo)}</p></div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    function renderRequestList() {
+      const filtered = getFilteredRequests();
+      listCountPill.textContent = `${filtered.length}건 표시`;
+
+      if (!filtered.length) {
+        requestList.innerHTML = `<div class="empty">조건에 맞는 신청 건이 없습니다.<br>필터를 조정하거나 시연 데이터를 생성해 주세요.</div>`;
+        if (!requests.length) selectedId = null;
+        renderDetailPanel();
+        return;
+      }
+
+      if (!selectedId || !filtered.some(item => item.id === selectedId)) {
+        selectedId = filtered[0].id;
+      }
+
+      requestList.innerHTML = filtered.map(item => `
+        <div class="request-item ${item.id === selectedId ? 'active' : ''}" data-id="${item.id}">
+          <div class="request-top">
+            <div>
+              <h5>${escapeHtml(item.name)} · ${escapeHtml(item.org)}</h5>
+              <div class="meta">${escapeHtml(item.visitType)} · ${item.date} ${item.time}<br>${escapeHtml(item.department)} / ${escapeHtml(item.host)}</div>
+            </div>
+            <span class="pill ${statusClass(item.status)}">${statusLabel(item.status)}</span>
+          </div>
+          <div class="meta">신청번호 ${item.requestId}<br>방문 목적: ${escapeHtml(item.purpose).slice(0, 48)}${item.purpose.length > 48 ? '…' : ''}</div>
+        </div>
+      `).join('');
+
+      requestList.querySelectorAll('.request-item').forEach(el => {
+        el.addEventListener('click', () => {
+          selectedId = el.dataset.id;
+          renderRequestList();
+          renderDetailPanel();
+        });
+      });
+
+      renderDetailPanel();
+    }
+
+    function renderDetailPanel() {
+      const item = requests.find(i => i.id === selectedId);
+      if (!item) {
+        detailPanel.innerHTML = `<div class="empty">왼쪽 목록에서 신청 건을 선택하면 상세 검토 화면이 표시됩니다.</div>`;
+        return;
+      }
+
+      detailPanel.innerHTML = `
+        <div class="card-head" style="margin-bottom:14px;">
+          <h4>${escapeHtml(item.name)} 방문 신청</h4>
+          <span class="pill ${statusClass(item.status)}">${statusLabel(item.status)}</span>
+        </div>
+
+        <div class="detail-grid">
+          <div class="detail"><span>신청번호</span><strong>${item.requestId}</strong></div>
+          <div class="detail"><span>방문 구분</span><strong>${escapeHtml(item.visitType)}</strong></div>
+          <div class="detail"><span>방문 일시</span><strong>${item.date} ${item.time}</strong></div>
+          <div class="detail"><span>요청 부서</span><strong>${escapeHtml(item.department)}</strong></div>
+          <div class="detail"><span>방문자</span><strong>${escapeHtml(item.name)}</strong></div>
+          <div class="detail"><span>기관 또는 업체명</span><strong>${escapeHtml(item.org)}</strong></div>
+          <div class="detail"><span>연락처</span><strong>${escapeHtml(item.phone)}</strong></div>
+          <div class="detail"><span>방문 대상자</span><strong>${escapeHtml(item.host)}</strong></div>
+          <div class="detail"><span>차량번호</span><strong>${escapeHtml(item.car || '미입력')}</strong></div>
+          <div class="detail"><span>동반자 정보</span><strong>${escapeHtml(item.companions || '없음')}</strong></div>
+        </div>
+
+        <div class="detail-full">
+          <span>방문 목적</span>
+          <p>${escapeHtml(item.purpose)}</p>
+        </div>
+
+        <div class="detail-full">
+          <span>관리자 검토 메모</span>
+          <textarea id="adminMemo" placeholder="승인 시 유의사항 또는 반려 사유를 입력해 주세요.">${escapeHtml(item.adminMemo || '')}</textarea>
+        </div>
+
+        <div class="action-grid">
+          <button class="btn btn-approve" type="button" id="approveBtn">승인 처리</button>
+          <button class="btn btn-reject" type="button" id="rejectBtn">반려 처리</button>
+          <button class="btn btn-soft" type="button" id="saveMemoBtn">메모 저장</button>
+          <button class="btn btn-ghost" type="button" id="deleteBtn">신청 삭제</button>
+        </div>
+      `;
+
+      document.getElementById('approveBtn').addEventListener('click', () => updateStatus(item.id, 'approved'));
+      document.getElementById('rejectBtn').addEventListener('click', () => updateStatus(item.id, 'rejected'));
+      document.getElementById('saveMemoBtn').addEventListener('click', () => saveAdminMemo(item.id));
+      document.getElementById('deleteBtn').addEventListener('click', () => deleteRequest(item.id));
+    }
+
+    function saveAdminMemo(id) {
+      const memo = document.getElementById('adminMemo')?.value || '';
+      const idx = requests.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      requests[idx].adminMemo = memo;
+      saveRequests();
+      renderHistory();
+      showToast('관리자 메모가 저장되었습니다.');
+    }
+
+    function updateStatus(id, status) {
+      const idx = requests.findIndex(i => i.id === id);
+      if (idx === -1) return;
+      const memo = document.getElementById('adminMemo')?.value || '';
+      requests[idx].status = status;
+      requests[idx].adminMemo = memo;
+      requests[idx].updatedAt = new Date().toISOString();
+      saveRequests();
+      updateMetrics();
+      renderRequestList();
+      renderHistory();
+      showToast(status === 'approved' ? '방문 신청이 승인되었습니다.' : '방문 신청이 반려 처리되었습니다.');
+    }
+
+    function deleteRequest(id) {
+      requests = requests.filter(i => i.id !== id);
+      selectedId = null;
+      saveRequests();
+      updateMetrics();
+      renderRequestList();
+      renderHistory();
+      showToast('신청 건이 삭제되었습니다.');
+    }
+
+    function renderAll() {
+      updateMetrics();
+      renderHistory();
+      renderRequestList();
+    }
+
+    document.getElementById('visitForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!document.getElementById('agree').checked) {
+        showToast('개인정보 및 보안 유의사항 동의가 필요합니다.');
+        return;
+      }
+
+      const newItem = {
+        id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()),
+        requestId: generateId(),
+        visitType: document.getElementById('visitType').value,
+        department: document.getElementById('department').value,
+        name: document.getElementById('name').value.trim(),
+        org: document.getElementById('org').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        host: document.getElementById('host').value.trim(),
+        date: document.getElementById('date').value,
+        time: document.getElementById('time').value,
+        car: document.getElementById('car').value.trim(),
+        companions: document.getElementById('companions').value.trim(),
+        purpose: document.getElementById('purpose').value.trim(),
+        status: 'pending',
+        adminMemo: '',
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+
+      requests.unshift(newItem);
+      selectedId = newItem.id;
+      saveRequests();
+      document.getElementById('visitForm').reset();
+      renderAll();
+      showToast('방문 신청이 등록되었습니다. 관리자 승인 화면에서 검토할 수 있습니다.');
+    });
+
+    document.getElementById('sampleFill').addEventListener('click', () => {
+      document.getElementById('visitType').value = '외부기관 업무협의';
+      document.getElementById('department').value = '디지털관리처';
+      document.getElementById('name').value = '홍길동';
+      document.getElementById('org').value = '대한기관';
+      document.getElementById('phone').value = '010-1234-5678';
+      document.getElementById('host').value = '김담당';
+      document.getElementById('date').value = '2026-04-15';
+      document.getElementById('time').value = '14:00';
+      document.getElementById('car').value = '12가3456';
+      document.getElementById('companions').value = '1명 / 이OO';
+      document.getElementById('purpose').value = '스마트 방문관리 시스템 구축과 운영 프로세스 협의를 위한 외부기관 업무 방문입니다.';
+      document.getElementById('agree').checked = true;
+      showToast('예시 데이터가 입력되었습니다.');
+    });
+
+    document.getElementById('seedDataBtn').addEventListener('click', () => {
+      const seeded = [
+        {
+          id: 'seed-1', requestId: 'KW-260409-1024', visitType: '외부기관 업무협의', department: '디지털관리처', name: '김민수', org: '수자원정책원', phone: '010-2222-1111', host: '박담당', date: '2026-04-10', time: '10:30', car: '34나5678', companions: '1명 / 이OO', purpose: '디지털 전환 협력회의 참석 및 추진 방향 협의', status: 'pending', adminMemo: '', createdAt: '2026-04-09T08:10:00', updatedAt: '2026-04-09T08:10:00'
+        },
+        {
+          id: 'seed-2', requestId: 'KW-260409-1088', visitType: '민원 상담 방문', department: '고객지원부서', name: '이수진', org: '개인 방문', phone: '010-8888-3333', host: '최담당', date: '2026-04-11', time: '14:00', car: '', companions: '', purpose: '수도시설 관련 민원 상담 및 현장 확인 요청', status: 'approved', adminMemo: '신분증 확인 후 로비에서 상담실로 안내 바랍니다.', createdAt: '2026-04-09T07:20:00', updatedAt: '2026-04-09T08:40:00'
+        },
+        {
+          id: 'seed-3', requestId: 'KW-260409-1103', visitType: '시설 점검 및 유지보수', department: '시설관리부서', name: '박정훈', org: '에이스테크', phone: '010-7777-4444', host: '정담당', date: '2026-04-12', time: '09:00', car: '67다1234', companions: '2명 / 김OO, 최OO', purpose: '정기 설비 점검과 부품 교체 수행', status: 'rejected', adminMemo: '장비 반입 내역과 세부 작업계획을 보완해 다시 요청해 주세요.', createdAt: '2026-04-09T06:50:00', updatedAt: '2026-04-09T08:55:00'
+        }
+      ];
+      requests = [...seeded, ...requests.filter(i => !String(i.id).startsWith('seed-'))];
+      selectedId = requests[0]?.id || null;
+      saveRequests();
+      renderAll();
+      showToast('시연 데이터가 생성되었습니다.');
+    });
+
+    document.getElementById('resetDataBtn').addEventListener('click', () => {
+      if (!confirm('모든 신청 데이터를 초기화할까요?')) return;
+      requests = [];
+      selectedId = null;
+      saveRequests();
+      renderAll();
+      showToast('전체 데이터가 초기화되었습니다.');
+    });
+
+    document.querySelectorAll('#filterGroup button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentFilter = btn.dataset.filter;
+        document.querySelectorAll('#filterGroup button').forEach(b => b.classList.toggle('active', b === btn));
+        renderRequestList();
+      });
+    });
+
+    searchInput.addEventListener('input', renderRequestList);
+
+    loadRequests();
+    renderAll();
+  </script>
+</body>
+</html>
